@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 7ad956e3e21496040b44b16956aaccba
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Komika Slick
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 511ae6afbaa2c684f911d2562a9c3e2c, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
