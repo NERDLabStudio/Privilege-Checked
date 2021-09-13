@@ -218,17 +218,17 @@
                         "type": "br"
                     },
                     {
-                        "innerText": "link-goto:\"You know. Your hair is softer and not as dry as some other hair types\\\"\",\"You know. Your hair is softer and not as dry as some other hair types\\\"\"",
+                        "innerText": "link-goto:\"You know. Your hair is softer and not as dry as some other hair types\",\"You know. Your hair is softer and not as dry as some other hair types\"",
                         "name": "linkgoto",
-                        "text": "(link-goto:\"You know. Your hair is softer and not as dry as some other hair types\\\"\",\"You know. Your hair is softer and not as dry as some other hair types\\\"\")",
+                        "text": "(link-goto:\"You know. Your hair is softer and not as dry as some other hair types\",\"You know. Your hair is softer and not as dry as some other hair types\")",
                         "tokens": [
                             {
                                 "text": "link-goto:",
                                 "type": "macroName"
                             },
                             {
-                                "innerText": "You know. Your hair is softer and not as dry as some other hair types\\\"",
-                                "text": "\"You know. Your hair is softer and not as dry as some other hair types\\\"\"",
+                                "innerText": "You know. Your hair is softer and not as dry as some other hair types",
+                                "text": "\"You know. Your hair is softer and not as dry as some other hair types\"",
                                 "type": "string"
                             },
                             {
@@ -236,8 +236,8 @@
                                 "type": "comma"
                             },
                             {
-                                "innerText": "You know. Your hair is softer and not as dry as some other hair types\\\"",
-                                "text": "\"You know. Your hair is softer and not as dry as some other hair types\\\"\"",
+                                "innerText": "You know. Your hair is softer and not as dry as some other hair types",
+                                "text": "\"You know. Your hair is softer and not as dry as some other hair types\"",
                                 "type": "string"
                             }
                         ],
@@ -632,8 +632,21 @@
                         "type": "br"
                     },
                     {
-                        "text": "description(\"She shrugs...\")",
-                        "type": "text"
+                        "innerText": "description:\"She shrugs...\"",
+                        "name": "description",
+                        "text": "(description:\"She shrugs...\")",
+                        "tokens": [
+                            {
+                                "text": "description:",
+                                "type": "macroName"
+                            },
+                            {
+                                "innerText": "She shrugs...",
+                                "text": "\"She shrugs...\"",
+                                "type": "string"
+                            }
+                        ],
+                        "type": "macro"
                     },
                     {
                         "text": "\n",
@@ -5462,6 +5475,17 @@
                     },
                     {
                         "text": "Real talk. If I didn't explain that to you, you should be totally cool with that. No one owes you an explanation about their ethnicity.",
+                        "type": "text"
+                    }
+                ]
+            },
+            {
+                "Name": "You know. Your hair is softer and not as dry as some other hair types",
+                "Pid": "70",
+                "Tags": "",
+                "Tokens": [
+                    {
+                        "text": "Double-click this passage to edit it.",
                         "type": "text"
                     }
                 ]

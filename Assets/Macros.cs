@@ -14,6 +14,7 @@ public class Macros : MonoBehaviour
 
     public void HasDescription(string text)
     {
+        Debug.Log("Running as description with " + text);
         Description.gameObject.SetActive(true);
         Description.text = text;
     }
