@@ -9,7 +9,6 @@ public class PassageMacros: Cradle.RuntimeMacros
     [RuntimeMacro]
     public void description(string passage)
     {
-        Debug.Log("STORY: " + this.Story);
         this.Story.GetComponent<Macros>().SendMessage("HasDescription", passage);
     }
 

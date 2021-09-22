@@ -14,11 +14,14 @@ public class PCTwineTextPlayer : MonoBehaviour {
 	public RectTransform WordContainer;
 	public RectTransform LinkContainer;
 	public Button LinkButtonTemplate;
-	public Text WordTemplate;
+	public Text PassageTemplate;
 //	public RectTransform LineBreakTemplate;
 	public bool StartStory = true;
 	public bool AutoDisplay = true;
 	public bool ShowNamedLinks = true;
+
+	private Vector3 passagePosition;
+	private Vector3 linkPosition;
 
 	static Regex rx_splitText = new Regex(@"(\s+|[^\s]+)");
 
@@ -26,19 +29,16 @@ public class PCTwineTextPlayer : MonoBehaviour {
 	{
 		if (!Application.isPlaying)
 			return;
-
+		linkPosition = LinkButtonTemplate.transform.position;
 		LinkButtonTemplate.gameObject.SetActive(false);
-		((RectTransform)LinkButtonTemplate.transform).SetParent(null);
+		LinkButtonTemplate.transform.SetParent(null);
 		LinkButtonTemplate.transform.hideFlags = HideFlags.HideInHierarchy;
 
-		WordTemplate.gameObject.SetActive(false);
-		WordTemplate.rectTransform.SetParent(null);
-		WordTemplate.rectTransform.hideFlags = HideFlags.HideInHierarchy;
-		/*
-		LineBreakTemplate.gameObject.SetActive(false);
-		LineBreakTemplate.SetParent(null);
-		LineBreakTemplate.hideFlags = HideFlags.HideInHierarchy;
-		*/
+		passagePosition = PassageTemplate.transform.position;
+		PassageTemplate.gameObject.SetActive(false);
+		PassageTemplate.rectTransform.SetParent(null);
+		PassageTemplate.rectTransform.hideFlags = HideFlags.HideInHierarchy;
+
 		if (this.Story == null)
 			this.Story = this.GetComponent<Story>();
 		if (this.Story == null)
@@ -50,6 +50,8 @@ public class PCTwineTextPlayer : MonoBehaviour {
 		this.Story.OnPassageEnter += Story_OnPassageEnter;
 		this.Story.OnOutput += Story_OnOutput;
 		this.Story.OnOutputRemoved += Story_OnOutputRemoved;
+		this.Story.OnPassageDone += Story_OnPassageDone;
+
 
 		if (StartStory)
 			this.Story.Begin();
@@ -94,6 +96,8 @@ public class PCTwineTextPlayer : MonoBehaviour {
 		for (int i = 0; i < LinkContainer.childCount; i++)
 			GameObject.Destroy(LinkContainer.GetChild(i).gameObject);
 		LinkContainer.DetachChildren();
+//added to deactivate optional caption
+		Story.GetComponent<Macros>().NoDescription();
 
 	}
 
@@ -102,12 +106,22 @@ public class PCTwineTextPlayer : MonoBehaviour {
 		Clear();
 	}
 
+	void Story_OnPassageDone(StoryPassage passage)
+    {
+		LinkContainer.GetComponent<Links>().Set();
+
+	}
+
 	void Story_OnOutput(StoryOutput output)
 	{
 		if (!this.AutoDisplay)
 			return;
 
 		DisplayOutput(output);
+		for(int i = 0; i < LinkContainer.GetComponentsInChildren<Button>().Length; i++)
+        {
+			LinkContainer.GetComponentsInChildren<Button>()[i].gameObject.SetActive(false);
+        }
 	}
 
 	void Story_OnOutputRemoved(StoryOutput outputThatWasRemoved)
@@ -135,9 +149,11 @@ public class PCTwineTextPlayer : MonoBehaviour {
 
 		// Temporary hack to allow other scripts to change the templates based on the output's Style property
 		SendMessage("Twine_BeforeDisplayOutput", output, SendMessageOptions.DontRequireReceiver);
+		string sentence = string.Empty;
 
 		if (output is StoryText)
 		{
+
 			// Deternine where to place this output in the hierarchy - right after the last UI element associated with the previous output, if exists
 			TwineTextPlayerElement last = WordContainer.GetComponentsInChildren<TwineTextPlayerElement>()
 				.Where(elem => elem.SourceOutput.Index < output.Index)
@@ -151,16 +167,22 @@ public class PCTwineTextPlayer : MonoBehaviour {
 				foreach (Match m in rx_splitText.Matches(text.Text))
 				{
 					string word = m.Value;
-					Text uiWord = (Text)Instantiate(WordTemplate);
-					uiWord.gameObject.SetActive(true);
-					uiWord.text = word;
-					uiWord.name = word;
-					AddToWordUI(uiWord.rectTransform, output, uiInsertIndex);
+                    sentence += word;
 					if (uiInsertIndex >= 0)
 						uiInsertIndex++;
 				}
 			}
+			Text uiWord = (Text)Instantiate(PassageTemplate);
+			uiWord.gameObject.SetActive(true);
+			uiWord.text = sentence;
+			uiWord.name = sentence;
+			AddToWordUI(uiWord.gameObject, output, uiInsertIndex);
+			if (uiInsertIndex >= 0) {
+				uiInsertIndex++;
+
+			}
 		}
+
 		else if (output is StoryLink)
 		{
 			// Deternine where to place this output in the hierarchy - right after the last UI element associated with the previous output, if exists
@@ -184,7 +206,7 @@ public class PCTwineTextPlayer : MonoBehaviour {
 			{
 				this.Story.DoLink(link);
 			});
-			AddToLinkUI((RectTransform)uiLink.transform, output, uiInsertIndex);
+			AddToLinkUI(uiLink.gameObject, output, uiInsertIndex);
 		}
 		/*
 		else if (output is LineBreak)
@@ -208,26 +230,30 @@ public class PCTwineTextPlayer : MonoBehaviour {
 			// Add an empty indicator to later positioning
 			var groupMarker = new GameObject();
 			groupMarker.name = output.ToString();
-			AddToWordUI(groupMarker.AddComponent<RectTransform>(), output, uiInsertIndex);
+//			AddToWordUI(groupMarker.AddComponent<RectTransform>(), output, uiInsertIndex);
 		}
 	}
 
-	void AddToWordUI(RectTransform rect, StoryOutput output, int index)
+	void AddToWordUI(GameObject go, StoryOutput output, int index)
 	{
-		rect.SetParent(WordContainer);
-		if (index >= 0)
-			rect.SetSiblingIndex(index);
+///		rect.SetParent(WordContainer);
+		go.transform.parent = WordContainer.transform;
+		go.transform.position = passagePosition;
+//		if (index >= 0)
+	//		rect.SetSiblingIndex(index);
 
-		var elem = rect.gameObject.AddComponent<TwineTextPlayerElement>();
+		var elem = go.gameObject.AddComponent<TwineTextPlayerElement>();
 		elem.SourceOutput = output;
 	}
-	void AddToLinkUI(RectTransform rect, StoryOutput output, int index)
+	void AddToLinkUI(GameObject go, StoryOutput output, int index)
 	{
-		rect.SetParent(LinkContainer);
-		if (index >= 0)
-			rect.SetSiblingIndex(index);
+		go.transform.parent = LinkContainer.transform;
+		go.transform.position = linkPosition;
 
-		var elem = rect.gameObject.AddComponent<TwineTextPlayerElement>();
+	//	if (index >= 0)
+//			rect.SetSiblingIndex(index);
+
+		var elem = go.gameObject.AddComponent<TwineTextPlayerElement>();
 		elem.SourceOutput = output;
 	}
 

@@ -9,20 +9,21 @@ public class Macros : MonoBehaviour
     public Image Character;
     void Start()
     {
-        Description.gameObject.SetActive(false);
     }
 
     public void HasDescription(string text)
     {
         Debug.Log("Running as description with " + text);
-        Description.gameObject.SetActive(true);
+        Description.transform.parent.gameObject.SetActive(true);
         Description.text = text;
+        Debug.Log("GAME OBJECT:" + Description.transform.parent.gameObject.name);
     }
 
     public void NoDescription()
     {
+        Debug.Log("No Description!");
         Description.text = "";
-        Description.gameObject.SetActive(false);
+        Description.transform.parent.gameObject.SetActive(false);
     }
 
     public void ChangeCharacterImage(string image)
